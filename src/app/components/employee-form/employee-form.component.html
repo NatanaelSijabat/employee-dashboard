@@ -1,0 +1,31 @@
+<div>
+  <h2>{{ isEdit ? 'Edit' : 'Create' }} Employee</h2>
+
+  <form (ngSubmit)="save()">
+    <div>
+      <label>Name:</label>
+      <input [(ngModel)]="employee.Name" name="Name" required maxlength="100">
+    </div>
+
+    <div>
+      <label>Position:</label>
+      <input [(ngModel)]="employee.Position" name="Position" required maxlength="50">
+    </div>
+
+    <div>
+      <label>Salary:</label>
+      <input type="number" [(ngModel)]="employee.Salary" name="Salary" required min="0">
+    </div>
+
+    <div>
+      <label>Department:</label>
+      <select [(ngModel)]="employee.DepartmentID" name="DepartmentID" required>
+        <option [ngValue]="null">--Select Department--</option>
+        <option *ngFor="let d of departments" [value]="d.DepartmentID">{{ d.DepartmentName }}</option>
+      </select>
+    </div>
+
+    <button type="submit">{{ isEdit ? 'Update' : 'Create' }}</button>
+    <button type="button" routerLink="/employees">Cancel</button>
+  </form>
+</div>

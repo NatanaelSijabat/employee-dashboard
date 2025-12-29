@@ -1,0 +1,13 @@
+<div>
+  <h2>{{ isEdit ? 'Edit' : 'Create' }} Department</h2>
+
+  <form (ngSubmit)="save()">
+    <div>
+      <label>Department Name:</label>
+      <input [(ngModel)]="department.DepartmentName" name="DepartmentName" required maxlength="50">
+    </div>
+
+    <button type="submit">{{ isEdit ? 'Update' : 'Create' }}</button>
+    <button type="button" routerLink="/departments">Cancel</button>
+  </form>
+</div>

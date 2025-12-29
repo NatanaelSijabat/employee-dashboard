@@ -1,0 +1,33 @@
+<div>
+  <input [(ngModel)]="search" placeholder="Search by name">
+  <button (click)="searchEmployees()">Search</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Position</th>
+        <th>Salary</th>
+        <th>Department</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let emp of employees">
+        <td>{{ emp.EmployeeID }}</td>
+        <td>{{ emp.Name }}</td>
+        <td>{{ emp.Position }}</td>
+        <td>{{ emp.Salary }}</td>
+        <td>{{ emp.Department?.DepartmentName }}</td>
+        <td>
+          <button [routerLink]="['/employees/edit', emp.EmployeeID]">Edit</button>
+          <button (click)="deleteEmployee(emp.EmployeeID)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button (click)="prevPage()" [disabled]="page <= 1">Prev</button>
+  <button (click)="nextPage()" [disabled]="page >= pagination.totalPages">Next</button>
+  <p>Page {{ page }} / {{ pagination.totalPages }}</p>
+</div>
