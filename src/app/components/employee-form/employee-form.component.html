@@ -1,31 +1,17 @@
+<!-- src/app/components/employee-form/employee-form.component.html -->
 <div>
-  <h2>{{ isEdit ? 'Edit' : 'Create' }} Employee</h2>
+  <label>Name</label>
+  <input type="text" [(ngModel)]="employee.Name" name="Name" required />
 
-  <form (ngSubmit)="save()">
-    <div>
-      <label>Name:</label>
-      <input [(ngModel)]="employee.Name" name="Name" required maxlength="100">
-    </div>
+  <label>Position</label>
+  <input type="text" [(ngModel)]="employee.Position" name="Position" required />
 
-    <div>
-      <label>Position:</label>
-      <input [(ngModel)]="employee.Position" name="Position" required maxlength="50">
-    </div>
+  <label>Salary</label>
+  <input type="number" [(ngModel)]="employee.Salary" name="Salary" required min="1" />
 
-    <div>
-      <label>Salary:</label>
-      <input type="number" [(ngModel)]="employee.Salary" name="Salary" required min="0">
-    </div>
+  <label>Department</label>
+  <p-dropdown [options]="departments" [(ngModel)]="employee.DepartmentID" optionLabel="DepartmentName"
+    optionValue="DepartmentID" placeholder="Select Department"></p-dropdown>
 
-    <div>
-      <label>Department:</label>
-      <select [(ngModel)]="employee.DepartmentID" name="DepartmentID" required>
-        <option [ngValue]="null">--Select Department--</option>
-        <option *ngFor="let d of departments" [value]="d.DepartmentID">{{ d.DepartmentName }}</option>
-      </select>
-    </div>
-
-    <button type="submit">{{ isEdit ? 'Update' : 'Create' }}</button>
-    <button type="button" routerLink="/employees">Cancel</button>
-  </form>
+  <button pButton type="button" label="Save" (click)="save()"></button>
 </div>

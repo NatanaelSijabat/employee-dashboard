@@ -1,58 +1,75 @@
-import { Component, OnInit } from '@angular/core';
-import { ApiService } from '../../services/api.service';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { EmployeeService } from '../../services/employee.service';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-employee-list',
-  templateUrl: './employee-list.component.html',
-  imports: [CommonModule, FormsModule, RouterModule],
-  standalone: true
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, TableModule, ButtonModule, InputTextModule, DialogModule, InputTextModule],
+  templateUrl: './employee-list.component.html'
 })
-export class EmployeeListComponent implements OnInit {
-  employees: any[] = [];
-  pagination: any = {};
+
+
+export class EmployeeListComponent {
+  employees!: [];
+  cols: any[] = [];
+  search = '';
   page = 1;
   limit = 10;
-  search = '';
+  pagination = { totalPages: 1 };
+  showAddDialog: boolean = false;
 
-  constructor(private api: ApiService) { }
 
-  ngOnInit(): void {
+  constructor(private employeeService: EmployeeService) {
     this.loadEmployees();
   }
 
-  loadEmployees(): void {
-    this.api.getEmployees(this.page, this.limit, this.search).subscribe(res => {
+  loadEmployees() {
+    this.employeeService.getAll(this.page, this.limit, this.search).subscribe(res => {
       this.employees = res.data;
-      this.pagination = res.pagination;
+      this.pagination.totalPages = res.pagination.totalPages;
     });
+
+    this.cols = [
+      { field: 'Name', header: 'Name' },
+      { field: 'Position', header: 'Position' },
+      { field: 'Department.DepartmentName', header: 'Department' },
+    ]
+
+
   }
 
-  searchEmployees(): void {
+  searchEmployees() {
     this.page = 1;
     this.loadEmployees();
   }
 
-  nextPage(): void {
-    if (this.page < this.pagination.totalPages) {
-      this.page++;
+  nextPage() { if (this.page < this.pagination.totalPages) { this.page++; this.loadEmployees(); } }
+  prevPage() { if (this.page > 1) { this.page--; this.loadEmployees(); } }
+
+  deleteEmployee(id: number) {
+    if (confirm('Delete this employee?')) {
+      this.employeeService.delete(id).subscribe(() => this.loadEmployees());
+    }
+  }
+
+  getFieldValue(rowData: any, field: string) {
+    return field.split('.').reduce((obj, key) => obj?.[key], rowData);
+  }
+
+
+  newEmployee = { name: '', position: '', department: '' };
+
+  addEmployee() {
+    this.employeeService.create(this.newEmployee).subscribe(() => {
       this.loadEmployees();
-    }
+      this.newEmployee = { name: '', position: '', department: '' };
+    });
   }
-
-  prevPage(): void {
-    if (this.page > 1) {
-      this.page--;
-      this.loadEmployees();
-    }
-  }
-
-  deleteEmployee(id: number): void {
-    if (confirm('Are you sure to delete?')) {
-      this.api.deleteEmployee(id).subscribe(() => this.loadEmployees());
-    }
-  }
-
 }

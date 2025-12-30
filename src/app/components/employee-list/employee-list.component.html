@@ -1,33 +1,68 @@
-<div>
-  <input [(ngModel)]="search" placeholder="Search by name">
-  <button (click)="searchEmployees()">Search</button>
+<!-- Add Employee Button -->
+<div class="p-d-flex p-jc-end p-mb-3">
+  <button pButton type="button" label="Add Employee" icon="pi pi-plus" class="p-button-success"
+    (click)="showAddDialog = true"></button>
+</div>
 
-  <table>
-    <thead>
+<!-- Add Employee Modal -->
+<p-dialog header="Add New Employee" [(visible)]="showAddDialog" [modal]="true" [closable]="true" [resizable]="false">
+  <div class="p-fluid p-formgrid p-grid">
+    <div class="p-field p-col-12 p-md-6">
+      <label for="name">Name</label>
+      <input id="name" type="text" pInputText [(ngModel)]="newEmployee.name" />
+    </div>
+    <div class="p-field p-col-12 p-md-6">
+      <label for="position">Position</label>
+      <input id="position" type="text" pInputText [(ngModel)]="newEmployee.position" />
+    </div>
+    <div class="p-field p-col-12 p-md-6">
+      <label for="department">Department</label>
+      <input id="department" type="text" pInputText [(ngModel)]="newEmployee.department" />
+    </div>
+    <div class="p-field p-col-12 p-md-6 p-d-flex p-jc-end p-ai-end">
+      <button pButton type="button" label="Add" class="p-button-success"
+        (click)="addEmployee(); showAddDialog=false"></button>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- Search bar -->
+<div class="search-bar p-d-flex p-ai-center p-jc-between p-mb-3">
+  <input pInputText [(ngModel)]="search" placeholder="Search by name" />
+  <button pButton type="button" label="Search" (click)="searchEmployees()"></button>
+</div>
+
+<!-- Employee table -->
+<div class="card employee-table-card">
+  <p-table [value]="employees" [columns]="cols">
+    <!-- Table header -->
+    <ng-template pTemplate="header" let-columns>
       <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Position</th>
-        <th>Salary</th>
-        <th>Department</th>
+        <th *ngFor="let col of columns">{{ col.header }}</th>
+        <th>Actions</th>
       </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let emp of employees">
-        <td>{{ emp.EmployeeID }}</td>
-        <td>{{ emp.Name }}</td>
-        <td>{{ emp.Position }}</td>
-        <td>{{ emp.Salary }}</td>
-        <td>{{ emp.Department?.DepartmentName }}</td>
-        <td>
-          <button [routerLink]="['/employees/edit', emp.EmployeeID]">Edit</button>
-          <button (click)="deleteEmployee(emp.EmployeeID)">Delete</button>
+    </ng-template>
+
+    <!-- Table body -->
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr>
+        <td *ngFor="let col of cols">{{ getFieldValue(rowData, col.field) }}</td>
+        <td class="actions-column">
+          <button pButton type="button" label="Edit" class="p-button-rounded p-button-success p-mr-2"
+            [routerLink]="['/employees/edit', rowData.EmployeeID]">
+          </button>
+          <button pButton type="button" label="Delete" class="p-button-rounded p-button-danger"
+            (click)="deleteEmployee(rowData.EmployeeID)">
+          </button>
         </td>
       </tr>
-    </tbody>
-  </table>
+    </ng-template>
+  </p-table>
+</div>
 
-  <button (click)="prevPage()" [disabled]="page <= 1">Prev</button>
-  <button (click)="nextPage()" [disabled]="page >= pagination.totalPages">Next</button>
-  <p>Page {{ page }} / {{ pagination.totalPages }}</p>
+<!-- Pagination -->
+<div class="pagination p-d-flex p-ai-center p-jc-center p-mt-3">
+  <button pButton type="button" label="Prev" (click)="prevPage()" [disabled]="page <= 1"></button>
+  <span>Page {{ page }} / {{ pagination.totalPages }}</span>
+  <button pButton type="button" label="Next" (click)="nextPage()" [disabled]="page >= pagination.totalPages"></button>
 </div>

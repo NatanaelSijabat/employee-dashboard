@@ -1,65 +1,41 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApiService } from '../../services/api.service';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { EmployeeService } from '../../services/employee.service';
+import { DropdownModule } from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-employee-form',
-  templateUrl: './employee-form.component.html',
-  imports: [FormsModule]
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, DropdownModule, ButtonModule, InputTextModule, InputNumberModule],
+  templateUrl: './employee-form.component.html'
 })
-
-export class EmployeeFormComponent implements OnInit {
-  employee: any = {
-    Name: '',
-    Position: '',
-    Salary: 0,
-    DepartmentID: null
-  };
+export class EmployeeFormComponent {
+  employee: any = {};
   departments: any[] = [];
-  isEdit = false;
+  id: number | null = null;
 
   constructor(
-    private api: ApiService,
+    private employeeService: EmployeeService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
-
-  ngOnInit(): void {
-    this.loadDepartments();
-
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.isEdit = true;
-      this.api.getEmployee(+id).subscribe(res => {
-        this.employee = {
-          Name: res.Name,
-          Position: res.Position,
-          Salary: res.Salary,
-          DepartmentID: res.DepartmentID
-        };
-      });
-    }
+  ) {
+    this.id = Number(this.route.snapshot.paramMap.get('id'));
+    if (this.id) this.loadEmployee();
   }
 
-  loadDepartments(): void {
-    this.api.getDepartments().subscribe(res => {
-      this.departments = res;
-    });
+  loadEmployee() {
+    this.employeeService.getById(this.id!).subscribe(res => this.employee = res);
   }
 
-  save(): void {
-    if (this.isEdit) {
-      const id = this.route.snapshot.paramMap.get('id');
-      this.api.updateEmployee(+id!, this.employee).subscribe({
-        next: () => this.router.navigate(['/employees']),
-        error: err => alert(err.error?.message || 'Error updating employee')
-      });
-    } else {
-      this.api.createEmployee(this.employee).subscribe({
-        next: () => this.router.navigate(['/employees']),
-        error: err => alert(err.error?.message || 'Error creating employee')
-      });
-    }
+  save() {
+    const obs = this.id
+      ? this.employeeService.update(this.id, this.employee)
+      : this.employeeService.create(this.employee);
+    obs.subscribe(() => this.router.navigate(['/employees']));
   }
 }
