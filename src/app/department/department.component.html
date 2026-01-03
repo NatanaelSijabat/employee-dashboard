@@ -1,0 +1,50 @@
+<p-toast></p-toast>
+
+<!-- Header -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+  <button pButton label="Add Department" icon="pi pi-plus" severity="success" (click)="showAddDialog = true">
+  </button>
+</div>
+
+<!-- Table -->
+<div class="card">
+  <p-table [value]="departments" responsiveLayout="scroll" [rows]="10" [paginator]="true">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Department Name</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-row let-i="rowIndex">
+      <tr>
+        <td>{{ row.DepartmentName }}</td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>
+
+<!-- Add Department Modal -->
+<p-dialog header="Add Department" [(visible)]="showAddDialog" [modal]="true" [closable]="true" [resizable]="false"
+  [style]="{ width: '90vw', maxWidth: '32rem' }">
+  <form #employeeForm="ngForm">
+    <div class="employee-form">
+      <div class="form-group">
+        <label>Department Name</label>
+        <input pInputText class="w-full" [(ngModel)]="newDepartment.DepartmentName" #DepartmentName="ngModel"
+          name="DepartmentName" placeholder="Enter department name" />
+        <small class="error" *ngIf="DepartmentName.invalid && DepartmentName.touched">
+          Name is required
+        </small>
+      </div>
+
+      <div class="form-actions">
+        <button pButton label="Add" severity="success" [disabled]="employeeForm.invalid"
+          (click)="addDepartment(); showAddDialog=false">
+        </button>
+      </div>
+
+    </div>
+  </form>
+</p-dialog>

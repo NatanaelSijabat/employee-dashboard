@@ -7,12 +7,13 @@ import { importProvidersFrom } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
+import { departmentRoutes } from './app/routes/department.route';
 
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(BrowserAnimationsModule),
     provideHttpClient(withFetch()),
-    provideRouter([...employeeRoutes], withEnabledBlockingInitialNavigation()),
+    provideRouter([...employeeRoutes,...departmentRoutes], withEnabledBlockingInitialNavigation()),
     providePrimeNG({
       theme: { preset: Aura },
       ripple: true
