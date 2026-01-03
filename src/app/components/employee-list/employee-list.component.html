@@ -1,68 +1,112 @@
-<!-- Add Employee Button -->
-<div class="p-d-flex p-jc-end p-mb-3">
-  <button pButton type="button" label="Add Employee" icon="pi pi-plus" class="p-button-success"
-    (click)="showAddDialog = true"></button>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+  <button pButton label="Add Employee" icon="pi pi-plus" severity="success" (click)="showAddDialog = true"></button>
+
+  <div style="display:flex;gap:8px;align-items:center;">
+    <input pInputText style="width:250px" [(ngModel)]="search" />
+    <button pButton icon="pi pi-search" label="Search" (click)="searchEmployees()"></button>
+  </div>
 </div>
 
 <!-- Add Employee Modal -->
-<p-dialog header="Add New Employee" [(visible)]="showAddDialog" [modal]="true" [closable]="true" [resizable]="false">
-  <div class="p-fluid p-formgrid p-grid">
-    <div class="p-field p-col-12 p-md-6">
-      <label for="name">Name</label>
-      <input id="name" type="text" pInputText [(ngModel)]="newEmployee.name" />
+<p-dialog header="Add New Employee" [(visible)]="showAddDialog" [modal]="true" [closable]="true" [resizable]="false"
+  [style]="{ width: '90vw', maxWidth: '32rem' }">
+
+  <form #employeeForm="ngForm">
+    <div class="employee-form">
+
+      <!-- Name -->
+      <div class="form-group">
+        <label>Name</label>
+        <input pInputText name="name" required [(ngModel)]="newEmployee.Name" #name="ngModel" />
+
+        <small class="error" *ngIf="name.invalid && name.touched">
+          Name is required
+        </small>
+      </div>
+
+      <!-- Position -->
+      <div class="form-group">
+        <label>Position</label>
+        <input pInputText name="position" required [(ngModel)]="newEmployee.Position" #position="ngModel" />
+
+        <small class="error" *ngIf="position.invalid && position.touched">
+          Position is required
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label>Salary</label>
+        <p-inputNumber name="Salary" [(ngModel)]="newEmployee.Salary" mode="currency" currency="IDR" locale="id-ID"
+          [min]="1" [inputStyle]="{ width: '100%' }" required #salary="ngModel">
+        </p-inputNumber>
+
+        <small class="error" *ngIf="salary.invalid && salary.touched">
+          Salary must be greater than 0
+        </small>
+      </div>
+
+      <!-- Department -->
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label>Department</label>
+        <p-dropdown name="DepartmentID" [options]="departments" optionLabel="DepartmentName" optionValue="DepartmentID"
+          placeholder="Select Department" [(ngModel)]="newEmployee.DepartmentID" required #deptDepartmentID="ngModel">
+        </p-dropdown>
+
+        <small class="error" *ngIf="deptDepartmentID.invalid &&  deptDepartmentID.touched">
+          Department is required
+        </small>
+      </div>
+
+      <!-- Action -->
+      <div class="form-actions">
+        <button pButton label="Add" severity="success" [disabled]="employeeForm.invalid"
+          (click)="addEmployee(); showAddDialog=false">
+        </button>
+      </div>
+
     </div>
-    <div class="p-field p-col-12 p-md-6">
-      <label for="position">Position</label>
-      <input id="position" type="text" pInputText [(ngModel)]="newEmployee.position" />
-    </div>
-    <div class="p-field p-col-12 p-md-6">
-      <label for="department">Department</label>
-      <input id="department" type="text" pInputText [(ngModel)]="newEmployee.department" />
-    </div>
-    <div class="p-field p-col-12 p-md-6 p-d-flex p-jc-end p-ai-end">
-      <button pButton type="button" label="Add" class="p-button-success"
-        (click)="addEmployee(); showAddDialog=false"></button>
-    </div>
-  </div>
+  </form>
 </p-dialog>
 
-<!-- Search bar -->
-<div class="search-bar p-d-flex p-ai-center p-jc-between p-mb-3">
-  <input pInputText [(ngModel)]="search" placeholder="Search by name" />
-  <button pButton type="button" label="Search" (click)="searchEmployees()"></button>
-</div>
 
 <!-- Employee table -->
-<div class="card employee-table-card">
-  <p-table [value]="employees" [columns]="cols">
-    <!-- Table header -->
-    <ng-template pTemplate="header" let-columns>
-      <tr>
-        <th *ngFor="let col of columns">{{ col.header }}</th>
-        <th>Actions</th>
+<div class="overflow-hidden rounded-xl border bg-white shadow-sm" style="margin-bottom: 10px;">
+  <p-table [value]="employees" [columns]="cols" responsiveLayout="scroll">
+    <ng-template pTemplate="header">
+      <tr class="bg-gray-50">
+        <th *ngFor="let col of cols" class="px-4 py-3 text-left text-sm font-semibold">{{ col.header }}</th>
+        <th class="px-4 py-3 text-center text-sm font-semibold w-32">Actions</th>
       </tr>
     </ng-template>
 
-    <!-- Table body -->
-    <ng-template pTemplate="body" let-rowData let-columns="columns">
-      <tr>
-        <td *ngFor="let col of cols">{{ getFieldValue(rowData, col.field) }}</td>
-        <td class="actions-column">
-          <button pButton type="button" label="Edit" class="p-button-rounded p-button-success p-mr-2"
-            [routerLink]="['/employees/edit', rowData.EmployeeID]">
-          </button>
-          <button pButton type="button" label="Delete" class="p-button-rounded p-button-danger"
-            (click)="deleteEmployee(rowData.EmployeeID)">
-          </button>
+    <ng-template pTemplate="body" let-rowData>
+      <tr class="border-t">
+        <td *ngFor="let col of cols" class="px-4 py-3">
+          {{ getFieldValue(rowData, col.field) }}
+        </td>
+        <td class="px-4 py-3">
+          <div class="flex flex-col gap-2 sm:flex-row sm:justify-center">
+            <button pButton icon="pi pi-pencil" severity="success" class="p-button-sm w-full sm:w-auto"
+              style="margin-right: 5px;">
+            </button>
+            <button pButton icon="pi pi-trash" severity="danger" class="p-button-sm w-full sm:w-auto"
+              (click)="deleteEmployee(rowData.EmployeeID)">
+            </button>
+          </div>
         </td>
       </tr>
     </ng-template>
   </p-table>
 </div>
 
+
 <!-- Pagination -->
-<div class="pagination p-d-flex p-ai-center p-jc-center p-mt-3">
-  <button pButton type="button" label="Prev" (click)="prevPage()" [disabled]="page <= 1"></button>
-  <span>Page {{ page }} / {{ pagination.totalPages }}</span>
-  <button pButton type="button" label="Next" (click)="nextPage()" [disabled]="page >= pagination.totalPages"></button>
+<div class="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+  <button pButton label="Prev" (click)="prevPage()" [disabled]="page <= 1"></button>
+
+  <span class="text-sm font-medium text-gray-700">
+    Page {{ page }} / {{ pagination.totalPages }}
+  </span>
+
+  <button pButton label="Next" (click)="nextPage()" [disabled]="page >= pagination.totalPages"></button>
 </div>
