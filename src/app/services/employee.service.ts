@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
-  private baseUrl = 'http://localhost:3000/api/employees';
+  private baseUrl = 'http://localhost:3006/api/employees';
   private headers = new HttpHeaders({ 'x-api-key': 'secret123' });
 
   constructor(private http: HttpClient) {}

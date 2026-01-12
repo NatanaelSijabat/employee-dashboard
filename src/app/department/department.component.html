@@ -13,12 +13,22 @@
     <ng-template pTemplate="header">
       <tr>
         <th>Department Name</th>
+        <th style="width:120px;text-align:center">Actions</th>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-row let-i="rowIndex">
       <tr>
         <td>{{ row.DepartmentName }}</td>
+        <td style="text-align:center">
+          <button pButton icon="pi pi-pencil" severity="success" class="p-button-sm" style="margin-right:6px"
+            (click)="openEditDepartment(row)">
+          </button>
+
+          <button pButton icon="pi pi-trash" severity="danger" class="p-button-sm"
+            (click)="deleteDepartment(row.DepartmentID)">
+          </button>
+        </td>
       </tr>
     </ng-template>
 
@@ -47,4 +57,34 @@
 
     </div>
   </form>
+</p-dialog>
+
+<!-- Edit Department Modal -->
+<p-dialog header="Edit Department" [(visible)]="showEditDepartmentDialog" [modal]="true" [closable]="true"
+  [resizable]="false" [style]="{ width: '90vw', maxWidth: '32rem' }">
+
+  <ng-container *ngIf="selectedDepartment">
+    <form #editDeptForm="ngForm">
+      <div class="employee-form">
+
+        <div class="form-group">
+          <label>Department Name</label>
+          <input pInputText class="w-full" name="EditDepartmentName" required
+            [(ngModel)]="selectedDepartment.DepartmentName" #editDeptName="ngModel" />
+
+          <small class="error" *ngIf="editDeptName.invalid && editDeptName.touched">
+            Name is required
+          </small>
+        </div>
+
+        <div class="form-actions">
+          <button pButton label="Update" severity="success" [disabled]="editDeptForm.invalid"
+            (click)="updateDepartment(); showEditDepartmentDialog=false">
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </ng-container>
+
 </p-dialog>

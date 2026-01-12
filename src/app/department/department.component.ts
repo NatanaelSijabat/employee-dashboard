@@ -31,11 +31,13 @@ export class DepartmentComponent implements OnInit {
   newDepartment = {
     DepartmentName: ''
   };
+  showEditDepartmentDialog = false;
+  selectedDepartment: any = null;
 
   constructor(
     private departmentService: DepartmentService,
     private messageService: MessageService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadDepartments();
@@ -87,4 +89,32 @@ export class DepartmentComponent implements OnInit {
       }
     });
   }
+
+  openEditDepartment(dept: any) {
+    this.selectedDepartment = { ...dept };
+    this.showEditDepartmentDialog = true;
+  }
+
+  updateDepartment() {
+    // contoh
+    this.departmentService
+      .update(this.selectedDepartment.DepartmentID, this.selectedDepartment)
+      .subscribe(() => {
+        this.loadDepartments();
+      });
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Department updated'
+    });
+  }
+
+  deleteDepartment(id: number) {
+    if (confirm('Delete this department?')) {
+      this.departmentService.delete(id).subscribe(() => this.loadDepartments())
+    }
+  }
+
+
 }

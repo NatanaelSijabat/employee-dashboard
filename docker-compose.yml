@@ -1,0 +1,14 @@
+services:
+  fe:
+    container_name: fe_qtasnim
+    image: employee-dashboard-angular
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8088:4200"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
